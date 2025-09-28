@@ -17,7 +17,7 @@
 
 ## Installation
 
-Add Htmlium to your HTML:
+Add Htmlium to your page:
 
 ```html
 <script type="module" src="https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@main/index.min.js"></script>
@@ -34,7 +34,7 @@ Header: "<header><h1>the title is: {{title}}</h1></header>"
 Footer: "<footer> its {{year}}</footer>"
 ```
 
-2. Components can include **variables** that you’ll fill in later using HTML attributes.
+2. Components can include **variables** that you’ll fill in later using html attributes.
 
 ---
 
