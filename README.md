@@ -1,6 +1,12 @@
 
 # Htmlium
 
+![license](https://img.shields.io/badge/License-MIT-yellow.svg)
+![stars](https://img.shields.io/github/stars/gustambolopez/htmlium?style=social)
+![forks](https://img.shields.io/github/forks/gustambolopez/htmlium?style=social)
+![cdn](https://img.shields.io/badge/CDN-jsdelivr-blue)
+
+
 **Htmlium** is a lightweight, fast html superset, fully configurable that makes your html **dynamic without any build tools**. You can create reusable components using yaml and interpolate data easily. Perfect if you just want plain html but with powerful features.
 
 ---
@@ -13,6 +19,9 @@
 * **Easy interpolation** – use `{{variable}}` in components.
 * **Fast and lightweight** – small footprint, simple to use.
 
+---
+## License
+https://opensource.org/license/mit
 ---
 
 ## Installation
