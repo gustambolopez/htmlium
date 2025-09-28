@@ -20,9 +20,6 @@
 * **Fast and lightweight** – small footprint, simple to use.
 
 ---
-## License
-https://opensource.org/license/mit
----
 
 ## Installation
 
