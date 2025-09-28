@@ -20,7 +20,7 @@
 Add Htmlium to your HTML:
 
 ```html
-<script type="module" src=""></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@main/index.min.js"></script>
 ```
 
 ---
