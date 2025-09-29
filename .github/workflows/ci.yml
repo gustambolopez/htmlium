@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "## Build Report" > report.md
           echo "- File size: $(stat -c%s index.min.js) bytes" >> report.md
-          echo "- Production build to use via cden: [Latest](https://cdn.jsdelivr.net/gh/${{ github.repository }}@latest/index.min.js)" >> report.md
+          echo "- Production build to use via cdn: [Latest](https://cdn.jsdelivr.net/gh/${{ github.repository }}@latest/index.min.js)" >> report.md
 
       - name: Release
         uses: softprops/action-gh-release@v1
