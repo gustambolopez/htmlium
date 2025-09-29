@@ -26,8 +26,9 @@ jobs:
           echo "- download: [Latest Build](https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@latest/src/index.min.js)" >> report.md
 
       - uses: actions/create-release@v1
+        id: create_release
         with:
-          tag_name: latest
+          tag_name: latest-${{ github.sha }}
           release_name: lastest
           draft: false
           prerelease: false
