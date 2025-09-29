@@ -1,37 +1,31 @@
-name: check jsdeliver build works and realize it
-
+name: Check jsDelivr build works and release it
 on:
   push:
     branches: [main]
-
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v3
-
-      - name: test jsdeliver build and create report
+      
+      - name: Test jsDelivr build and create report
         run: |
           npm install -g terser
           terser src/index.js -c -m -o index.min.js
-
-      - name: make report
+      
+      - name: Make report
         run: |
-          echo "## build report" > report.md
-          echo "- file size: $(stat -c%s index.min.js) bytes" >> report.md
-          echo "- download: [Latest Build](https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@latest/src/index.min.js)" >> report.md
-
-      - name: create or update release
-        id: create_release
+          echo "## Build Report" > report.md
+          echo "- File size: $(stat -c%s index.min.js) bytes" >> report.md
+          echo "- Download: [Latest Build](https://cdn.jsdelivr.net/gh/${{ github.repository }}@latest/index.min.js)" >> report.md
+      
+      - name: Create or update release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
-          name: lastest
-          body: automated-jsdeliver-build
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: upload last prod build to realizes
-        uses: softprops/action-gh-release@v1
-        with:
+          name: Latest Build
+          body_path: report.md
           files: index.min.js
           token: ${{ secrets.GITHUB_TOKEN }}
