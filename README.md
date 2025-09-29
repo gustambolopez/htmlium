@@ -6,7 +6,7 @@
 ![cdn](https://img.shields.io/badge/CDN-jsdelivr-blue)
 [![badge](https://data.jsdelivr.com/v1/package/gh/gustambolopez/htmlium/badge)](https://www.jsdelivr.com/package/gh/gustambolopez/htmlium)
 
-**Htmlium** is a lightweight, fast html superset, fully configurable that makes your html **dynamic without any build tools**. You can create reusable components using yaml and interpolate data easily. Perfect if you just want plain html but with powerful features and reactivity with NO breaking changes.
+**Htmlium** is a lightweight, fast html superset, fully configurable that makes your html **dynamic without any build tools**. You can create reusable components using yaml and interpolate data easily. Perfect if you just want plain html but with powerful features and reactivity with NO breaking changes, its purpose its to create reusable components all over ur site, it will work on your site as long as you import it.
 
 ---
 
