@@ -2,6 +2,8 @@ name: CI
 on:
   push:
     branches: [main]
+    paths:
+      - 'src/**'
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -9,18 +11,15 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v3
-
-      - name: Test jsdeliver build and create a report
+      - name: Test jsdelivr build and create a report
         run: |
           npm install -g terser
           terser src/index.js -c -m -o index.min.js
-
       - name: Generate report
         run: |
           echo "## Build Report" > report.md
           echo "- File size: $(stat -c%s index.min.js) bytes" >> report.md
           echo "- Production build to use via cdn: [Latest](https://cdn.jsdelivr.net/gh/${{ github.repository }}@latest/index.min.js)" >> report.md
-
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
