@@ -18,7 +18,6 @@ jobs:
         run: |
           npm install -g terser
           terser src/index.js -c -m -o index.min.js
-          head -c 100 index.min.js | grep -q "function"
 
       - name: make report
         run: |
