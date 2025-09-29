@@ -9,8 +9,9 @@
 **Htmlium** is a lightweight, fast html superset, fully configurable that makes your html **dynamic without any build tools**. You can create reusable components using yaml and interpolate data easily. Perfect if you just want plain html but with powerful features and reactivity with NO breaking changes.
 
 ---
-Demo: 
-https://gustambolopez.github.io/htmlium/
+
+Demo:
+<https://gustambolopez.github.io/htmlium/>
 ---
 
 ## Features
