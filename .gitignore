@@ -1,0 +1,7 @@
+.gitpod.yml
+.vscode
+.gitattributes
+debug.log
+views/dist/*
+src/.shutdown
+.idea

@@ -34,7 +34,7 @@ const Config = {
 		sanitizeHtml: true,
 	},
 };
- // TODO... add better sanitization, add auto updating with no memory leaks
+// TODO... add better sanitization, add auto updating with no memory leaks
 const sanitize = {
 	"<": "&lt;",
 	">": "&gt;",
@@ -68,7 +68,6 @@ class Processor {
 	externalcomponents(components) {
 		this.extcomps = components || {};
 	}
-
 
 	mergeConfig(config) {
 		const merged = JSON.parse(JSON.stringify(Config));
@@ -104,7 +103,6 @@ class Processor {
 		}
 		return this.regexpcache.get(key);
 	}
-
 
 	parsecomps(content) {
 		const { component } = this.config;
@@ -215,9 +213,7 @@ class Processor {
 		return template.replace(pattern, (_, path) => {
 			const val = this.getnestvalue(data, path);
 			if (val == null) return "";
-			return interpolation.sanitize
-				? this.sanitizer(String(val))
-				: String(val);
+			return interpolation.sanitize ? this.sanitizer(String(val)) : String(val);
 		});
 	}
 
@@ -285,7 +281,10 @@ function processorcreationig(config = {}) {
 	return new Processor(config);
 }
 
-async function processDocument(config = {}, componentslocation = "components.yaml") {
+async function processDocument(
+	config = {},
+	componentslocation = "components.yaml",
+) {
 	const processor = processorcreationig(config);
 	try {
 		const external = await loadcomponents(componentslocation);
@@ -302,4 +301,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	processDocument();
 });
 
-export { Processor as process, processorcreationig as createProcessor, processDocument };
+export {
+	Processor as process,
+	processorcreationig as createProcessor,
+	processDocument,
+};

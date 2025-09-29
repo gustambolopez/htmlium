@@ -1,0 +1,44 @@
+/*
+HTMLium formatter/linter config
+do NOT modify this file or else ur pull request will be denied, if you want to please first contact me on my discord
+      _  __      _ _ _
+  ___/ |/ /_  __| (_) |__
+ / __| | '_ \/ _` | | '_ \
+ \__ \ | (_) | (_| | | | |
+ |___/_|\___/\__,_|_|_| |_|
+*/
+{
+  "formatter": {
+    "enabled": true,
+    "lineWidth": 80,
+    "indentStyle": "tab",
+    "indentWidth": 2
+  },
+
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "all",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSpacing": true,
+      "attributePosition": "auto",
+      "bracketSameLine": false
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
+    }
+  },
+  "json": {
+    "formatter": {
+      "trailingCommas": "none"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true
+    }
+  }
+}

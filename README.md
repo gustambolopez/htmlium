@@ -13,7 +13,9 @@
 Demo:
 <https://gustambolopez.github.io/htmlium/>
 ---
+
 ## Inspiration
+
 HTMLium its like a mix of handlebars+ alpine.js + web components + simpler designed to be a relief, not cause a pain because of you having to rewrite all your stuff
 
 ## Features
@@ -33,7 +35,7 @@ HTMLium its like a mix of handlebars+ alpine.js + web components + simpler desig
 Add Htmlium to your page:
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@lastest/index.min.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@latest/src/index.min.js"></script>
 ````
 
 ---
