@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<script
-			src="https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@main/index.min.js"
+			src="https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@latest/index.min.js"
 			type="module" ></script>
 		<style>
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
@@ -16,12 +16,26 @@ body {
 	</head>
 	<body>
 		<htmlium
-			loadcomponent="Header"
+			loadcomponent="header"
 			title="this is a header using component interpolation"
 		></htmlium>
-
 		<main>
 			<p>this is the main content of the page.</p>
+
+			<htmlium
+				loadcomponent="status"
+				status="active"
+				label="status"
+			></htmlium>
+
+			<htmlium
+				loadcomponent="features"
+				feature1="nested properties"
+				feature2="donditionals"
+				feature3="loops"
+        feature4="components"
+        feature5="component interpolation"
+			></htmlium>
 		</main>
 	</body>
 </html>

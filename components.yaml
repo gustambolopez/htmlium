@@ -4,8 +4,26 @@ metadata: |
   <title>{{title}}</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico"/>
 
-Header: |
+header: |
   <header>
     <h1>{{title}}</h1>
+    <p>{{subtitle}}</p>
     <hr>
   </header>
+
+status: |
+  <div style="{{#if status}}background:#d4edda;color:#155724{{#else}}background:#f8d7da;color:#721c24{{/if}}">
+    <strong>{{label}}:</strong> {{#if status}}Active{{#else}}Inactive{{/if}}
+  </div>
+
+features: |
+  <div style="margin-top: 20px;">
+    <h3>features:</h3>
+    <ul>
+      {{#if feature1}}<li> {{feature1}}</li>{{/if}}
+      {{#if feature2}}<li> {{feature2}}</li>{{/if}}
+      {{#if feature3}}<li> {{feature3}}</li>{{/if}}
+      {{#if feature4}}<li> {{feature4}}</li>{{/if}}
+      {{#if feature5}}<li> {{feature5}}</li>{{/if}}
+    </ul>
+  </div>

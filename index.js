@@ -7,10 +7,10 @@
 
 /*
 if you have any questions reach me at discord:
-      _  __      _ _ _   
-  ___/ |/ /_  __| (_) |__ 
+      _  __      _ _ _
+  ___/ |/ /_  __| (_) |__
  / __| | '_ \/ _` | | '_ \
- \__ \ | (_) | (_| | | | | 
+ \__ \ | (_) | (_| | | | |
  |___/_|\___/\__,_|_|_| |_|
 */
 
@@ -18,6 +18,7 @@ if you have any questions reach me at discord:
 // Copyright (c) 2025 s16.org
 // License: https://opensource.org/license/mit/
 
+// the customizable part ig
 const Config = {
 	component: {
 		tagName: "htmlium",
@@ -33,7 +34,7 @@ const Config = {
 		sanitizeHtml: true,
 	},
 };
-
+ // TODO... add better sanitization, add auto updating with no memory leaks
 const sanitize = {
 	"<": "&lt;",
 	">": "&gt;",
@@ -44,10 +45,7 @@ const sanitize = {
 
 import jsyaml from "https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.mjs";
 
-/**
- * @param {string} url
- */
-async function loadComponentsFromYaml(url = "components.yaml") {
+async function loadcomponents(url = "components.yaml") {
 	const response = await fetch(url);
 	if (!response.ok) throw new Error(`Failed to load components from ${url}`);
 	const text = await response.text();
@@ -60,26 +58,23 @@ class Processor {
 	 */
 	constructor(config = {}) {
 		this.config = this.mergeConfig(config);
-		this.regexCache = new Map();
-		this.externalComponents = {};
+		this.regexpcache = new Map();
+		this.extcomps = {};
 	}
 
 	/**
 	 * @param {Object} components
 	 */
-	setExternalComponents(components) {
-		this.externalComponents = components || {};
+	externalcomponents(components) {
+		this.extcomps = components || {};
 	}
 
-	/**
-	 * @param {Config} config
-	 */
+
 	mergeConfig(config) {
 		const merged = JSON.parse(JSON.stringify(Config));
 		this.deepMerge(merged, config);
 		return merged;
 	}
-
 
 	deepMerge(target, source) {
 		for (const key of Object.keys(source)) {
@@ -99,24 +94,21 @@ class Processor {
 	/**
 	 * @param {string} str
 	 */
-	escRegex(str) {
+	escaperegexp(str) {
 		return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 	}
 
-
-	getRegex(key, factory) {
-		if (!this.regexCache.has(key)) {
-			this.regexCache.set(key, factory());
+	regxep(key, factory) {
+		if (!this.regexpcache.has(key)) {
+			this.regexpcache.set(key, factory());
 		}
-		return this.regexCache.get(key);
+		return this.regexpcache.get(key);
 	}
 
-	/**
-	 * @param {string} content
-	 */
-	parseComponent(content) {
+
+	parsecomps(content) {
 		const { component } = this.config;
-		const pattern = this.getRegex(
+		const pattern = this.regxep(
 			"componentSet",
 			() =>
 				new RegExp(
@@ -129,7 +121,7 @@ class Processor {
 
 		let match = pattern.exec(content);
 		while (match !== null) {
-			const props = this.parseAttributes(match[1]);
+			const props = this.attributes(match[1]);
 			const componentName = props.component;
 			if (componentName) {
 				components[componentName] = match[2];
@@ -154,28 +146,77 @@ class Processor {
 	/**
 	 * @param {string} text
 	 */
-	sanitizeText(text) {
+	sanitizer(text) {
 		return this.config.security.sanitizeHtml
 			? text.replace(/[<>&"']/g, (c) => sanitize[c])
 			: text;
 	}
 
+	getnestvalue(obj, path) {
+		return path.split(".").reduce((current, key) => current?.[key], obj);
+	}
+
+	/**
+	 * @param {string} template
+	 * @param {Object} data
+	 */
+	conditionalsp(template, data) {
+		return template.replace(
+			/\{\{#if\s+([\w.]+)\}\}([\s\S]*?)(?:\{\{#else\}\}([\s\S]*?))?\{\{\/if\}\}/g,
+			(_, path, ifContent, elseContent) => {
+				const val = this.getnestvalue(data, path);
+				const isTruthy = val && val !== "false" && val !== "0";
+				return isTruthy ? ifContent : elseContent || "";
+			},
+		);
+	}
+
+	ploops(template, data) {
+		return template.replace(
+			/\{\{#each\s+([\w.]+)\}\}([\s\S]*?)\{\{\/each\}\}/g,
+			(_, path, content) => {
+				const arr = this.getnestvalue(data, path);
+				if (!Array.isArray(arr)) return "";
+
+				return arr
+					.map((item, index) => {
+						let itemData;
+						if (typeof item === "object" && item !== null) {
+							itemData = {
+								...item,
+								"@index": index,
+							};
+						} else {
+							itemData = {
+								this: item,
+								"@index": index,
+							};
+						}
+
+						let processed = this.conditionalsp(content, itemData);
+						processed = this.ploops(processed, itemData);
+						return this.interpolate(processed, itemData);
+					})
+					.join("");
+			},
+		);
+	}
 
 	interpolate(template, data) {
 		const { interpolation } = this.config;
-		const pattern = this.getRegex(
+		const pattern = this.regxep(
 			"interpolation",
 			() =>
 				new RegExp(
-					`${this.escRegex(interpolation.start)}(\\w+)${this.escRegex(interpolation.end)}`,
+					`${this.escaperegexp(interpolation.start)}([\\w.@]+)${this.escaperegexp(interpolation.end)}`,
 					"g",
 				),
 		);
-		return template.replace(pattern, (_, key) => {
-			const val = data[key];
+		return template.replace(pattern, (_, path) => {
+			const val = this.getnestvalue(data, path);
 			if (val == null) return "";
 			return interpolation.sanitize
-				? this.sanitizeText(String(val))
+				? this.sanitizer(String(val))
 				: String(val);
 		});
 	}
@@ -183,7 +224,7 @@ class Processor {
 	/**
 	 * @param {string} tagString
 	 */
-	parseAttributes(tagString) {
+	attributes(tagString) {
 		const props = {};
 		const regex = /(\w+)="([^"]*)"/g;
 		let match = regex.exec(tagString);
@@ -195,22 +236,19 @@ class Processor {
 		return props;
 	}
 
-	/**
-	 * @param {string} content
-	 */
 	transform(content) {
-		const { components, html } = this.parseComponent(content);
+		const { components, html } = this.parsecomps(content);
 		const mergedComponents = {
-			...this.externalComponents,
+			...this.extcomps,
 			...components,
 		};
 		const { component } = this.config;
-		const componentRegex = this.getRegex(
+		const componentRegex = this.regxep(
 			"component",
 			() => new RegExp(`<${component.tagName}\\s+([^>]+?)(?:\\/?)>`, "g"),
 		);
 		return html.replace(componentRegex, (_, attrs) => {
-			const props = this.parseAttributes(attrs);
+			const props = this.attributes(attrs);
 			const componentName = props[component.attributeName];
 			if (!componentName || !mergedComponents[componentName]) {
 				return "";
@@ -220,7 +258,10 @@ class Processor {
 			};
 			delete data[component.attributeName];
 			try {
-				return this.interpolate(mergedComponents[componentName], data);
+				let result = mergedComponents[componentName];
+				result = this.conditionalsp(result, data);
+				result = this.ploops(result, data);
+				return this.interpolate(result, data);
 			} catch {
 				return "";
 			}
@@ -231,7 +272,7 @@ class Processor {
 	 * @param {string} content
 	 * @param {HTMLElement} targetElement
 	 */
-	renderTo(content, targetElement) {
+	renderon(content, targetElement) {
 		const processed = this.transform(content);
 		if (targetElement) {
 			targetElement.innerHTML = processed;
@@ -240,21 +281,17 @@ class Processor {
 	}
 }
 
-/**
- * @param {Config} config
- */
-function createProcessor(config = {}) {
+function processorcreationig(config = {}) {
 	return new Processor(config);
 }
 
-
-async function processDocument(config = {}, yamlUrl = "components.yaml") {
-	const processor = createProcessor(config);
+async function processDocument(config = {}, componentslocation = "components.yaml") {
+	const processor = processorcreationig(config);
 	try {
-		const external = await loadComponentsFromYaml(yamlUrl);
-		processor.setExternalComponents(external);
+		const external = await loadcomponents(componentslocation);
+		processor.externalcomponents(external);
 	} catch {
-		console.warn(`Failed to load components from ${yamlUrl}`);
+		console.warn(`Failed to load components from ${componentslocation}`);
 	}
 	const content = document.body.innerHTML;
 	const processed = processor.transform(content);
@@ -265,4 +302,4 @@ document.addEventListener("DOMContentLoaded", () => {
 	processDocument();
 });
 
-export { Processor as process, createProcessor, processDocument };
+export { Processor as process, processorcreationig as createProcessor, processDocument };
