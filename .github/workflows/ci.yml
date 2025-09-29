@@ -11,33 +11,36 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: skip the workflow if theres no changes on the src
-        run: echo "skipped because there was no changes on the src"
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
-      - name: test jsdeliver build and create report
+      - name: Minify JS
         run: |
           npm install -g terser
           terser src/index.js -c -m -o index.min.js
 
-      - name: make report
+      - name: Make report
         run: |
           echo "## build report" > report.md
           echo "- file size: $(stat -c%s index.min.js) bytes" >> report.md
           echo "- download: [Latest Build](https://cdn.jsdelivr.net/gh/gustambolopez/htmlium@latest/src/index.min.js)" >> report.md
 
-      - uses: actions/create-release@v1
+      - name: Create or update release
         id: create_release
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: latest-${{ github.sha }}
-          release_name: lastest
-          draft: false
-          prerelease: false
-          body: "automated-jsdeliver-build"
+          tag_name: latest
+          name: lastest
+          body: automated-jsdeliver-build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: upload last prod build to realizes
-        uses: actions/upload-release-asset@v1
+      - name: Upload minified JS to release
+        uses: softprops/action-gh-release@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: index.min.js
-          asset_name: index.min.js
-          asset_content_type: application/javascript
+          files: index.min.js
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
