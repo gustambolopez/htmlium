@@ -11,7 +11,7 @@
 ---
 
 Demo:
-<https://gustambolopez.github.io/htmlium/>
+<https://htmlium.s16.lol/>
 ---
 
 ## Inspiration
