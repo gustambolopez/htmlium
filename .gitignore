@@ -4,3 +4,7 @@
 debug.log
 src/.shutdown
 .idea
+
+
+#Ignore codacy rules
+.github/instructions/codacy.instructions.md
