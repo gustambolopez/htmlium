@@ -63,14 +63,14 @@ const dangerousPatterns = [
 	/<meta/gi,
 	/<style/gi,
 	/<\/style/gi,
-]; // Remove dangerous tags 
+]; 
 
 const allowedTags = new Set([
-	'div', 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+	'div', 'span', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
 	'strong', 'em', 'b', 'i', 'u', 'br', 'hr', 'ul', 'ol', 'li',
 	'a', 'img', 'table', 'tr', 'td', 'th', 'thead', 'tbody',
-	'section', 'article', 'header', 'footer', 'nav', 'main'
-]); // Extend as you need, this is just a basic set but its good.
+	'section', 'article', 'header', 'footer', 'nav', 'main',
+]);
 
 import jsyaml from "https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.mjs";
 
@@ -95,12 +95,12 @@ async function loadcomponents(url = "components.yaml") {
 	if (!response.ok) {
 		throw new Error(`Failed to load components from ${url}`);
 	}
-	
+
 	const text = await response.text();
 	if (text.length > 1000000) {
 		throw new Error('Component file too large');
 	}
-	
+
 	return jsyaml.load(text);
 }
 
@@ -150,7 +150,7 @@ class Processor {
 			if (key === '__proto__' || key === 'constructor' || key === 'prototype') {
 				continue;
 			}
-			
+
 			if (
 				source[key] &&
 				typeof source[key] === "object" &&
@@ -235,17 +235,17 @@ class Processor {
 		if (!this.validateInput(text)) {
 			return '';
 		}
-		
+
 		if (!this.config.security.sanitizeHtml) {
 			return text;
 		}
 
 		let sanitized = text.replace(/[<>&"'`=/]/g, (char) => htmlEntities[char] || char);
-		
+
 		for (const pattern of dangerousPatterns) {
 			sanitized = sanitized.replace(pattern, '');
 		}
-		
+
 		return sanitized;
 	}
 
@@ -253,13 +253,13 @@ class Processor {
 		if (!this.validateInput(html)) {
 			return '';
 		}
-		
+
 		if (!this.config.security.sanitizeHtml) {
 			return html;
 		}
 
 		let sanitized = html;
-		
+
 		for (const pattern of dangerousPatterns) {
 			sanitized = sanitized.replace(pattern, '');
 		}
@@ -269,16 +269,16 @@ class Processor {
 			if (!allowedTags.has(tag)) {
 				return '';
 			}
-			
+
 			if (attrs) {
 				attrs = attrs.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
 				attrs = attrs.replace(/href\s*=\s*["']javascript:[^"']*["']/gi, '');
 				attrs = attrs.replace(/src\s*=\s*["']javascript:[^"']*["']/gi, '');
 			}
-			
+
 			return `<${slash}${tag}${attrs}>`;
 		});
-		
+
 		return sanitized;
 	}
 
@@ -336,7 +336,7 @@ class Processor {
 		if (!this.validateInput(template)) {
 			return '';
 		}
-		
+
 		const { interpolation } = this.config;
 		const pattern = this.regxep(
 			"interpolation",
@@ -373,25 +373,25 @@ class Processor {
 		if (!this.validateInput(content)) {
 			return '';
 		}
-		
+
 		const { components, html } = this.parsecomps(content);
 		const mergedComponents = {
 			...this.extcomps,
 			...components,
 		};
-		
+
 		const componentCount = Object.keys(mergedComponents).length;
 		if (componentCount > 1000) {
 			console.warn('Too many components detected, limiting processing');
 			return html;
 		}
-		
+
 		const { component } = this.config;
 		const componentRegex = this.regxep(
 			"component",
 			() => new RegExp(`<${this.escaperegexp(component.tagName)}\\s+([^>]+?)(?:\\/?)>`, "g"),
 		);
-		
+
 		let processedCount = 0;
 		return html.replace(componentRegex, (_, attrs) => {
 			processedCount++;
@@ -399,27 +399,27 @@ class Processor {
 				console.warn('Component processing limit reached');
 				return '';
 			}
-			
+
 			const props = this.attributes(attrs);
 			const componentName = props[component.attributeName];
-			
+
 			if (!componentName || typeof componentName !== 'string' || componentName.length > 100) {
 				return "";
 			}
-			
+
 			if (!mergedComponents[componentName]) {
 				return "";
 			}
-			
+
 			const data = { ...props };
 			delete data[component.attributeName];
-			
+
 			try {
 				let result = mergedComponents[componentName];
 				if (typeof result !== 'string' || result.length > 100000) {
 					return '';
 				}
-				
+
 				result = this.conditionalsp(result, data);
 				result = this.ploops(result, data);
 				return this.interpolate(result, data);
@@ -432,24 +432,24 @@ class Processor {
 
 	startAutoUpdate(targetElement = document.body) {
 		if (this.isObserving || !targetElement) return;
-		
+
 		this.observer = new MutationObserver((mutations) => {
 			let shouldUpdate = false;
 			let mutationCount = 0;
-			
+
 			for (const mutation of mutations) {
 				mutationCount++;
 				if (mutationCount > 100) {
 					console.warn('Too many mutations detected, skipping update');
 					return;
 				}
-				
+
 				if (mutation.type === 'childList' || mutation.type === 'attributes') {
 					shouldUpdate = true;
 					break;
 				}
 			}
-			
+
 			if (shouldUpdate) {
 				try {
 					this.renderSecurely(targetElement.innerHTML, targetElement);
@@ -465,7 +465,7 @@ class Processor {
 			attributes: true,
 			attributeFilter: [this.config.component.attributeName]
 		});
-		
+
 		this.isObserving = true;
 	}
 
@@ -475,13 +475,13 @@ class Processor {
 			this.observer = null;
 		}
 		this.isObserving = false;
-	} // Stop observing DOM changes
+	}
 
 	createSecureElement(htmlString) {
 		if (!this.validateInput(htmlString)) {
 			return null;
 		}
-		
+
 		const sanitized = this.sanitizeHtml(htmlString);
 		const template = document.createElement('template');
 		template.innerHTML = sanitized;
@@ -492,15 +492,15 @@ class Processor {
 		if (!targetElement || !this.validateInput(content)) {
 			return '';
 		}
-		
+
 		const processed = this.transform(content);
 		const secureContent = this.createSecureElement(processed);
-		
+
 		if (secureContent) {
 			targetElement.innerHTML = '';
 			targetElement.appendChild(secureContent);
 		}
-		
+
 		return processed;
 	}
 
@@ -519,26 +519,26 @@ async function processDocument(
 	enableAutoUpdate = true,
 ) {
 	const processor = processorcreationig(config);
-	
+
 	try {
 		const external = await loadcomponents(componentslocation);
 		processor.externalcomponents(external);
 	} catch (error) {
 		console.warn(`Failed to load components from ${componentslocation}:`, error.message);
 	}
-	
+
 	if (!document.body) {
 		console.error('Document body not found');
 		return processor;
 	}
-	
+
 	const content = document.body.innerHTML;
 	processor.renderSecurely(content, document.body);
-	
+
 	if (enableAutoUpdate) {
 		processor.startAutoUpdate(document.body);
 	}
-	
+
 	return processor;
 }
 
